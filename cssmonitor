@@ -4,10 +4,10 @@ function addStylesheet(fileName) {
 
         link.type = "text/css";
         link.rel = "stylesheet";
-        link.href = fileName;
+        link.href = fileName + "?now=" + new Date() * 1;
 
         head.appendChild(link);
-        links.push(document.querySelector('link[href*="'+fileName+'"]'));
+        links.push(link);
     }
     function removeStylesheet(sheet) {
         document.querySelector('link[href*="'+sheet+'"]').remove();
