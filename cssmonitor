@@ -5,6 +5,7 @@ function addStylesheet(fileName) {
         link.type = "text/css";
         link.rel = "stylesheet";
         link.href = fileName + "?now=" + new Date() * 1;
+        console.log(link.href);
 
         head.appendChild(link);
         links.push(link);
