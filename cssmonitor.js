@@ -10,7 +10,12 @@ function addStylesheet(fileName) {
         links.push(link);
     }
     function removeStylesheet(sheet) {
-        document.querySelector('link[href*="'+sheet+'"]').remove();
+        try {
+                document.querySelector('link[href*="'+sheet+'"]').remove();
+        }
+        catch(e) {
+                console.log("Error removing stylesheet: "+sheet);
+        }
     }
 
     var headers = { "Etag": 1, "Last-Modified": 1, "Content-Length": 1, "Content-Type": 1 },
