@@ -1,11 +1,10 @@
 function addStylesheet(fileName) {
         var head = document.head;
         var link = document.createElement("link");
-        console.log("here");
+
         link.type = "text/css";
         link.rel = "stylesheet";
         link.href = fileName + "?now=" + new Date() * 1;
-        console.log(link.href);
 
         head.appendChild(link);
         links.push(link);
