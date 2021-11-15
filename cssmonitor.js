@@ -17,6 +17,10 @@ function removeStylesheet(sheet) {
 		console.log("Error removing stylesheet: "+sheet);
 	}
 }
+function removeFooterStyle() {
+	$("footer style").remove();
+}
+
 
 //https://livejs.com/
 var headers = { "Etag": 1, "Last-Modified": 1, "Content-Length": 1, "Content-Type": 1 },
