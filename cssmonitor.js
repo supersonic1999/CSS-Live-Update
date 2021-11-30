@@ -1,13 +1,15 @@
 function addStylesheet(fileName) {
 	var head = document.head;
 	var link = document.createElement("link");
-	
+
 	link.type = "text/css";
 	link.rel = "stylesheet";
 	link.href = fileName + "?start=" + new Date() * 1;
-	
+
 	head.appendChild(link);
 	links.push(link);
+
+	$("html").append("<p style='position:fixed; user-select: none; white-space: nowrap; text-shadow: 1px 1px #000000; font-weight: 600; font-size: 30px; color: white; opacity: 0.3; left: 20px; top: 50%; transform: translateX(-50%) rotate(-90deg);' class='live-watermark'>Note: Running Local CSS</p>");
 }
 function removeStylesheet(sheet) {
 	try {
@@ -19,6 +21,9 @@ function removeStylesheet(sheet) {
 }
 function removeFooterStyle() {
 	$("footer style").remove();
+}
+function removeWatermark() {
+	$(".live-watermark").remove();
 }
 
 
@@ -43,22 +48,22 @@ var Live = {
 		}
 		setTimeout(Live.heartbeat, interval);
 	},
-	
+
 	// loads all local css and js resources upon first activation
 	loadresources: function () {
 		// gather all resources
 		var uris = [];
-		
+
 		// track local css urls
 		for (var i = 0; i < links.length; i++) {
 			var link = links[i], rel = link.getAttribute("rel"), href = link.getAttribute("href", 2);
-			
+
 			if (href && rel && rel.match(new RegExp("stylesheet", "i"))) {
 				uris.push(href);
 				currentLinkElements[href] = link;
 			}
 		}
-		
+
 		// initialize the reso urces info
 		for (i = 0; i < uris.length; i++) {
 			var url = uris[i];
@@ -66,7 +71,7 @@ var Live = {
 				resources[url] = info;
 			});
 		}
-		
+
 		// add rule for morphing between old and new css files
 		var head = document.getElementsByTagName("head")[0],
 		style = document.createElement("style"),
@@ -75,18 +80,18 @@ var Live = {
 		style.setAttribute("type", "text/css");
 		head.appendChild(style);
 		style.styleSheet ? style.styleSheet.cssText = css : style.appendChild(document.createTextNode(css));
-		
+
 		// yep
 		loaded = true;
 		console.log("CSS Monitor: Loaded");
 	},
-	
+
 	// check all tracking resources for changes
 	checkForChanges: function () {
 		for (var url in resources) {
 			if (pendingRequests[url])
 			continue;
-			
+
 			Live.getHead(url, function (url, newInfo) {
 				var oldInfo = resources[url],
 				hasChanged = false;
@@ -113,7 +118,7 @@ var Live = {
 			});
 		}
 	},
-	
+
 	// act upon a changed url
 	refreshResource: function (url) {
 			var link = currentLinkElements[url],
@@ -121,7 +126,7 @@ var Live = {
 			head = link.parentNode,
 			next = link.nextSibling,
 			newLink = document.createElement("link");
-			
+
 			html.className = html.className.replace(/\s*livejs\-loading/gi, '') + ' livejs-loading';
 			newLink.setAttribute("type", "text/css");
 			newLink.setAttribute("rel", "stylesheet");
@@ -131,15 +136,15 @@ var Live = {
 			oldLinkElements[url] = link;
 
 			console.log("CSS Monitor:", url, "changed");
-			
+
 			// schedule removal of the old link
 			Live.removeoldLinkElements();
 	},
-	
+
 	// removes the old stylesheet rules only once the new one has finished loading
 	removeoldLinkElements: function () {
 		var pending = 0;
-		
+
 		for (var url in oldLinkElements) {
 			// if this sheet has any cssRules, delete the old link
 			try {
@@ -161,7 +166,7 @@ var Live = {
 			if (pending) setTimeout(Live.removeoldLinkElements, 50);
 		}
 	},
-	
+
 	// performs a HEAD request and passes the header info to the given callback
 	getHead: function (url, callback) {
 		pendingRequests[url] = true;
