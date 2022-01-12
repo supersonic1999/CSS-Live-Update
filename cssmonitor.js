@@ -9,7 +9,11 @@ function addStylesheet(fileName) {
 	head.appendChild(link);
 	links.push(link);
 
-	$("html").append("<p style='position:fixed; user-select: none; white-space: nowrap; text-shadow: 1px 1px #000000; font-weight: 600; font-size: 30px; color: white; opacity: 0.3; left: 20px; top: 50%; transform: translateX(-50%) rotate(-90deg);' class='live-watermark'>Note: Running Local CSS</p>");
+	var node = document.createElement("p");
+	node.style.cssText += "position:fixed; user-select: none; white-space: nowrap; text-shadow: 1px 1px #000000; font-weight: 600; font-size: 30px; color: white; opacity: 0.3; left: 20px; top: 50%; transform: translateX(-50%) rotate(-90deg);";
+	node.classList.add("live-watermark");
+	node.textContent += "Note: Running Local CSS";
+	document.querySelector('html').appendChild(node);
 }
 function removeStylesheet(sheet) {
 	try {
@@ -20,12 +24,13 @@ function removeStylesheet(sheet) {
 	}
 }
 function removeFooterStyle() {
-	$("footer style").remove();
+	var styles = document.querySelector('footer style');
+	if(styles) styles.remove();
 }
 function removeWatermark() {
-	$(".live-watermark").remove();
+	var watermark = document.querySelector('.live-watermark');
+	if(watermark) watermark.remove();
 }
-
 
 //https://livejs.com/
 var headers = { "Etag": 1, "Last-Modified": 1, "Content-Length": 1, "Content-Type": 1 },
@@ -121,24 +126,24 @@ var Live = {
 
 	// act upon a changed url
 	refreshResource: function (url) {
-			var link = currentLinkElements[url],
-			html = document.body.parentNode,
-			head = link.parentNode,
-			next = link.nextSibling,
-			newLink = document.createElement("link");
+		var link = currentLinkElements[url],
+		html = document.body.parentNode,
+		head = link.parentNode,
+		next = link.nextSibling,
+		newLink = document.createElement("link");
 
-			html.className = html.className.replace(/\s*livejs\-loading/gi, '') + ' livejs-loading';
-			newLink.setAttribute("type", "text/css");
-			newLink.setAttribute("rel", "stylesheet");
-			newLink.setAttribute("href", url + "?now=" + new Date() * 1);
-			next ? head.insertBefore(newLink, next) : head.appendChild(newLink);
-			currentLinkElements[url] = newLink;
-			oldLinkElements[url] = link;
+		html.className = html.className.replace(/\s*livejs\-loading/gi, '') + ' livejs-loading';
+		newLink.setAttribute("type", "text/css");
+		newLink.setAttribute("rel", "stylesheet");
+		newLink.setAttribute("href", url + "?now=" + new Date() * 1);
+		next ? head.insertBefore(newLink, next) : head.appendChild(newLink);
+		currentLinkElements[url] = newLink;
+		oldLinkElements[url] = link;
 
-			console.log("CSS Monitor:", url, "changed");
+		console.log("CSS Monitor:", url, "changed");
 
-			// schedule removal of the old link
-			Live.removeoldLinkElements();
+		// schedule removal of the old link
+		Live.removeoldLinkElements();
 	},
 
 	// removes the old stylesheet rules only once the new one has finished loading
@@ -166,7 +171,7 @@ var Live = {
 			if (pending) setTimeout(Live.removeoldLinkElements, 50);
 		}
 	},
-
+	
 	// performs a HEAD request and passes the header info to the given callback
 	getHead: function (url, callback) {
 		pendingRequests[url] = true;
